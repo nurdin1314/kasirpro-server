@@ -1,0 +1,51 @@
+{
+    "name":  "kasirpro",
+    "version":  "1.0.0",
+    "description":  "Aplikasi Kasir Pro",
+    "main":  "main.js",
+    "scripts":  {
+                    "start":  "electron .",
+                    "obfuscate":  "node obfuscate.js",
+                    "prebuild":  "node obfuscate.js",
+                    "build":  "node obfuscate.js \u0026\u0026 electron-builder --win portable",
+                    "build:dir":  "node obfuscate.js \u0026\u0026 electron-builder --win dir",
+                    "server":  "node server.js"
+                },
+    "build":  {
+                  "appId":  "com.kasirpro.app",
+                  "productName":  "Kasir Pro",
+                  "directories":  {
+                                      "output":  "C:\\temp\\kasir-build"
+                                  },
+                  "files":  [
+                                "index.html",
+                                "chart.umd.min.js",
+                                "kasirpro.css",
+                                "theme.css",
+                                "main.js",
+                                "server.js",
+                                "server-config.json",
+                                "package.json"
+                            ],
+                  "win":  {
+                              "target":  [
+                                             "portable",
+                                             "nsis"
+                                         ],
+                              "icon":  null
+                          },
+                  "portable":  {
+                                   "artifactName":  "KasirPro-${version}-portable.exe"
+                               }
+              },
+    "dependencies":  {
+                         "express":  "^4.21.0",
+                         "sql.js":  "^1.14.1"
+                     },
+    "devDependencies":  {
+                            "asar":  "^3.2.0",
+                            "electron":  "^43.0.0",
+                            "electron-builder":  "^26.15.3",
+                            "javascript-obfuscator":  "^5.4.3"
+                        }
+}
