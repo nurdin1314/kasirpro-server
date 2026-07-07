@@ -4,25 +4,35 @@ const fs = require('fs');
 const crypto = require('crypto');
 const initSqlJs = require('sql.js');
 
-const configPath = path.join(__dirname, 'server-config.json');
-let config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-const PORT = config.port || 3456;
-const APP_DATA = process.env.APPDATA || path.join(require('os').homedir(), 'AppData', 'Roaming');
-const DATA_DIR = path.join(APP_DATA, 'KasirPro');
+const PORT = process.env.PORT || 3456;
+const isRender = !!process.env.PORT;
+const DATA_DIR = isRender ? '/tmp/kasirpro-data' : (process.env.APPDATA ? path.join(process.env.APPDATA, 'KasirPro') : path.join(__dirname, 'data'));
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 const DB_PATH = path.join(DATA_DIR, 'kasirpro.db');
 const BACKUP_DIR = path.join(DATA_DIR, 'backups');
 if (!fs.existsSync(BACKUP_DIR)) fs.mkdirSync(BACKUP_DIR, { recursive: true });
 
-// Generate cabang ID once
-if (!config.cabangId || config.cabangId === 'AUTO') {
-    config.cabangId = crypto.randomBytes(4).toString('hex').toUpperCase();
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 4));
+let cabangId = 'SERVER';
+const configPath = path.join(DATA_DIR, 'server-config.json');
+try {
+  const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  if (config.cabangId) cabangId = config.cabangId;
+} catch(e) {
+  cabangId = crypto.randomBytes(4).toString('hex').toUpperCase();
+  fs.writeFileSync(configPath, JSON.stringify({ cabangId: cabangId, port: PORT }));
 }
 
 const app = express();
 app.use(express.json({ limit: '50mb' }));
-app.use(express.static(__dirname));
+
+// CORS for all origins
+app.use(function(req,res,next){
+  res.header('Access-Control-Allow-Origin','*');
+  res.header('Access-Control-Allow-Headers','*');
+  res.header('Access-Control-Allow-Methods','GET,PUT,POST,DELETE,OPTIONS');
+  if(req.method==='OPTIONS') return res.sendStatus(200);
+  next();
+});
 
 let db;
 let SQL_CONSTRUCTOR;
@@ -293,7 +303,7 @@ app.post('/api/sync/upload', (req, res) => {
 });
 
 app.get('/api/sync/info', (req, res) => {
-    res.json({ cabangId: config.cabangId, cabangNama: config.cabangNama });
+    res.json({ cabangId: cabangId, cabangNama: cabangId });
 });
 
 app.post('/api/sync/push', (req, res) => {
