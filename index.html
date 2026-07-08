@@ -4549,7 +4549,7 @@ function loadGhConfig(){
 
 function getGhApiUrl(){return 'https://api.github.com/repos/'+ghRepo+'/contents/kasirpro-data.json';}
 
-function syncToGitHub(){
+function syncToGitHub(afterPull){
   loadGhConfig();
   ghToken=document.getElementById('sGhToken').value.trim();
   ghRepo=document.getElementById('sGhRepo').value.trim();
@@ -4560,7 +4560,6 @@ function syncToGitHub(){
   document.getElementById('ghSyncStatus').textContent='Mengirim...';
   var payload={cabangId:cabangId||'',inventory:inventoryData,penjualan:penjualanData,pembelian:pembelianData,pelanggan:pelangganData,supplier:abhSupplierData,kas:kasData,biaya:biayaData,hutang:hutangData,piutang:piutangData,room:roomData,pemasukan:pemasukanData,pengeluaran:pengeluaranData,mutasikas:mutasiKasData,mutasibarang:mutasiBarangData,stokopname:stokOpnameData,user:userData};
   var content=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
-  // Cek file dulu untuk dapat SHA
   fetch(getGhApiUrl(),{headers:{Authorization:'Bearer '+ghToken,Accept:'application/vnd.github+json'}}).then(function(r){
     if(r.status===200)return r.json();
     if(r.status===404)return null;
@@ -4574,11 +4573,10 @@ function syncToGitHub(){
     return r.json();
   }).then(function(){
     document.getElementById('ghSyncStatus').textContent='OK '+new Date().toLocaleTimeString();
-    showToast('Data berhasil di-push ke GitHub','success');
     ghSyncing=false;
+    if(afterPull) pullFromGitHub();
   }).catch(function(e){
     document.getElementById('ghSyncStatus').textContent='Error';
-    showToast('Gagal push: '+e.message,'error');
     ghSyncing=false;
   });
 }
@@ -4841,8 +4839,8 @@ function finishInit(){
   populateAllKategoriDropdowns();
   loadGhConfig();
   setInterval(function(){
-    if(ghToken&&ghRepo) syncToGitHub();
-  },60000);
+    if(ghToken&&ghRepo) syncToGitHub(true);
+  },180000);
 }
 
 function pullMasterFromServer(){
