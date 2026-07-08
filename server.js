@@ -4,35 +4,25 @@ const fs = require('fs');
 const crypto = require('crypto');
 const initSqlJs = require('sql.js');
 
-const PORT = process.env.PORT || 3456;
-const isRender = !!process.env.PORT;
-const DATA_DIR = isRender ? '/tmp/kasirpro-data' : (process.env.APPDATA ? path.join(process.env.APPDATA, 'KasirPro') : path.join(__dirname, 'data'));
+const configPath = path.join(__dirname, 'server-config.json');
+let config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+const PORT = config.port || 3456;
+const APP_DATA = process.env.APPDATA || path.join(require('os').homedir(), 'AppData', 'Roaming');
+const DATA_DIR = path.join(APP_DATA, 'KasirPro');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 const DB_PATH = path.join(DATA_DIR, 'kasirpro.db');
 const BACKUP_DIR = path.join(DATA_DIR, 'backups');
 if (!fs.existsSync(BACKUP_DIR)) fs.mkdirSync(BACKUP_DIR, { recursive: true });
 
-let cabangId = 'SERVER';
-const configPath = path.join(DATA_DIR, 'server-config.json');
-try {
-  const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-  if (config.cabangId) cabangId = config.cabangId;
-} catch(e) {
-  cabangId = crypto.randomBytes(4).toString('hex').toUpperCase();
-  fs.writeFileSync(configPath, JSON.stringify({ cabangId: cabangId, port: PORT }));
+// Generate cabang ID once
+if (!config.cabangId || config.cabangId === 'AUTO') {
+    config.cabangId = crypto.randomBytes(4).toString('hex').toUpperCase();
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 4));
 }
 
 const app = express();
 app.use(express.json({ limit: '50mb' }));
-
-// CORS for all origins
-app.use(function(req,res,next){
-  res.header('Access-Control-Allow-Origin','*');
-  res.header('Access-Control-Allow-Headers','*');
-  res.header('Access-Control-Allow-Methods','GET,PUT,POST,DELETE,OPTIONS');
-  if(req.method==='OPTIONS') return res.sendStatus(200);
-  next();
-});
+app.use(express.static(__dirname));
 
 let db;
 let SQL_CONSTRUCTOR;
@@ -111,7 +101,6 @@ function initDb(SQL) {
     db.run('CREATE TABLE IF NOT EXISTS pengeluaran (id INTEGER PRIMARY KEY AUTOINCREMENT, tanggal TEXT, keterangan TEXT, jumlah REAL, kas TEXT, catatan TEXT)');
     db.run('CREATE TABLE IF NOT EXISTS mutasi_kas (id INTEGER PRIMARY KEY AUTOINCREMENT, tanggal TEXT, dari TEXT, ke TEXT, jumlah REAL, keterangan TEXT)');
     db.run('CREATE TABLE IF NOT EXISTS mutasi_barang (id INTEGER PRIMARY KEY AUTOINCREMENT, tanggal TEXT, barang TEXT, tipe TEXT, jumlah REAL, keterangan TEXT)');
-    db.run('CREATE TABLE IF NOT EXISTS stok_opname (id INTEGER PRIMARY KEY AUTOINCREMENT, tanggal TEXT, selesai INTEGER DEFAULT 0, items_data TEXT)');
     db.run('CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY AUTOINCREMENT, data TEXT)');
     saveDatabase();
     console.log('SQLite database ready:', DB_PATH);
@@ -128,13 +117,12 @@ app.get('/api/sync/all', (req, res) => {
     try {
         res.json({
             inventory: q('SELECT * FROM products').map(rowToProduct),
-            penjualan: q('SELECT * FROM penjualan ORDER BY id DESC').map(r => ({ id: r.id, noFaktur: r.no_faktur, tanggal: r.tanggal, jam: r.jam, ket: r.keterangan, pelanggan: r.pelanggan, pelangganId: r.pelanggan_id, jumlah: r.jumlah, subtotal: r.subtotal, bayar: r.bayar, piutang: r.piutang, kas: r.kas, jthTempo: r.jth_tempo, operator: r.operator, jasaKirim: r.jasa_kirim, biayaKirim: r.biaya_kirim, kodeCabang: r.kode_cabang, items: r.items_data ? JSON.parse(r.items_data) : [] })),
+            penjualan: q('SELECT * FROM penjualan ORDER BY id DESC').map(r => ({ ...r, items: r.items_data ? JSON.parse(r.items_data) : [] })),
             pembelian: q('SELECT * FROM pembelian ORDER BY id DESC'),
             pelanggan: q('SELECT * FROM pelanggan').map(r => ({ id: r.id, kode: r.code || String(r.id).padStart(8,'0'), nama: r.name, telp: r.phone||'', alamat: r.address||'', email: r.email||'', batasPiutang: r.credit_limit||0, kartuMember:'', group:'Umum', saldoPiutang:0, saldoTabungan:0, jumlahPoint:0, foto:'', tanggalDaftar:'' })),
-            supplier: q('SELECT * FROM suppliers').map(r => ({ id: String(r.id), kode: r.code || String(r.id).padStart(8,'0'), nama: r.name, alamat: r.address||'', kota: '', telp: r.phone||'', npwp: '', catatan: '', saldoHutang: r.balance||0 })),
+            supplier: q('SELECT * FROM suppliers'),
             kas: q('SELECT * FROM kas').map(r => ({ id: r.id, kode: r.code||'', nama: r.name, saldo: r.balance||0, tipe: r.type||'Tunai', keterangan: r.notes||'' })),
-            biaya: q('SELECT * FROM biaya').map(r => ({ id: r.id, kode: r.code||'', nama: r.name, kategori: r.category||'Operasional', keterangan: r.description||'' })),
-            stokopname: q('SELECT * FROM stok_opname ORDER BY id DESC').map(r => ({ id: r.id, tanggal: r.tanggal, selesai: r.selesai==1, items: r.items_data?JSON.parse(r.items_data):[] }))
+            biaya: q('SELECT * FROM biaya').map(r => ({ id: r.id, kode: r.code||'', nama: r.name, kategori: r.category||'Operasional', keterangan: r.description||'' }))
         });
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -142,10 +130,7 @@ app.get('/api/sync/all', (req, res) => {
 app.post('/api/products', (req, res) => {
     try {
         const p = req.body;
-        const kategori = p.kategori || p.category || '';
-        const extra = {};
-        if (p.stockCabang) extra.stockCabang = p.stockCabang;
-        run('INSERT INTO products (sku,name,description,price,stock,category,cost_price,unit,extra_data) VALUES (?,?,?,?,?,?,?,?,?)', [p.sku, p.name, p.description||'', p.price||0, p.stock||0, kategori, p.cost_price||0, p.unit||'PCS', JSON.stringify(extra)]);
+        run('INSERT INTO products (sku,name,description,price,stock,category,cost_price,unit,extra_data) VALUES (?,?,?,?,?,?,?,?,?)', [p.sku, p.name, p.description||'', p.price||0, p.stock||0, p.category||'', p.cost_price||0, p.unit||'PCS', p.extra_data||'{}']);
         saveDatabase();
         const row = get('SELECT * FROM products ORDER BY id DESC LIMIT 1');
         res.json({ product: row });
@@ -155,10 +140,7 @@ app.post('/api/products', (req, res) => {
 app.put('/api/products/:id', (req, res) => {
     try {
         const p = req.body;
-        const kategori = p.kategori || p.category || '';
-        const extra = {};
-        if (p.stockCabang) extra.stockCabang = p.stockCabang;
-        run('UPDATE products SET sku=?,name=?,description=?,price=?,stock=?,category=?,cost_price=?,unit=?,extra_data=? WHERE id=?', [p.sku, p.name, p.description||'', p.price||0, p.stock||0, kategori, p.cost_price||0, p.unit||'PCS', JSON.stringify(extra), req.params.id]);
+        run('UPDATE products SET sku=?,name=?,description=?,price=?,stock=?,category=?,cost_price=?,unit=?,extra_data=? WHERE id=?', [p.sku, p.name, p.description||'', p.price||0, p.stock||0, p.category||'', p.cost_price||0, p.unit||'PCS', p.extra_data||'{}', req.params.id]);
         saveDatabase();
         const row = get('SELECT * FROM products WHERE id=?', [req.params.id]);
         res.json({ product: row });
@@ -267,11 +249,7 @@ app.post('/api/sync/upload', (req, res) => {
         const cabangId = d.cabangId || config.cabangId;
         if (d.inventory) {
             db.run('DELETE FROM products');
-            for (let item of d.inventory) {
-              const extra = {};
-              if (item.stockCabang) extra.stockCabang = item.stockCabang;
-              run('INSERT INTO products (sku,name,description,price,stock,category,cost_price,unit,extra_data) VALUES (?,?,?,?,?,?,?,?,?)', [item.kode, item.nama, item.catatan||'', item.hjual||0, item.stok||0, item.kategori||'', item.hbeli||0, item.satuan||'PCS', JSON.stringify(extra)]);
-            }
+            for (let item of d.inventory) run('INSERT INTO products (sku,name,description,price,stock,category,cost_price,unit,extra_data) VALUES (?,?,?,?,?,?,?,?,?)', [item.kode, item.nama, item.catatan||'', item.hjual||0, item.stok||0, item.kategori||'', item.hbeli||0, item.satuan||'PCS', '{}']);
         }
         if (d.penjualan) {
             db.run('DELETE FROM penjualan');
@@ -303,7 +281,7 @@ app.post('/api/sync/upload', (req, res) => {
 });
 
 app.get('/api/sync/info', (req, res) => {
-    res.json({ cabangId: cabangId, cabangNama: cabangId });
+    res.json({ cabangId: config.cabangId, cabangNama: config.cabangNama });
 });
 
 app.post('/api/sync/push', (req, res) => {
