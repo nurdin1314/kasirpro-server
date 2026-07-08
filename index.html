@@ -1970,6 +1970,30 @@
                         <div style="font-size:10px;color:#3b6ec4;flex:1;">Ambil master data (produk, pelanggan, supplier, kas, biaya) dari server pusat. Data lokal akan ditimpa.</div>
                         <button class="btn-sm btn-primary" style="background:#2563eb;border-color:#1d4ed8;white-space:nowrap;" onclick="pullFromServer()"><i class="fas fa-cloud-arrow-down"></i> Tarik Data</button>
                     </div>
+                    <div style="background:#f5f3ff;border:1px solid #ddd6fe;border-radius:6px;padding:12px 16px;">
+                        <div style="font-weight:700;font-size:12px;color:#5b21b6;"><i class="fab fa-github"></i> Sync via GitHub</div>
+                        <div style="font-size:10px;color:#6d4b9e;margin-bottom:8px;">Data sync otomatis via GitHub repo. Semua cabang push/pull data ke repo yang sama.</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                            <div style="grid-column:1/-1;">
+                                <label style="font-size:11px;font-weight:600;color:#4c1d95;">GitHub Token</label>
+                                <input type="password" id="sGhToken" style="width:100%;padding:5px 6px;border:1px solid #c4b5fd;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+                                <div style="font-size:9px;color:#8b5cf6;margin-top:2px;">Buat di GitHub > Settings > Developer settings > Personal access tokens > Tokens (classic) — centang repo</div>
+                            </div>
+                            <div>
+                                <label style="font-size:11px;font-weight:600;color:#4c1d95;">Repo (owner/repo)</label>
+                                <input type="text" id="sGhRepo" style="width:100%;padding:5px 6px;border:1px solid #c4b5fd;border-radius:4px;font-size:11px;box-sizing:border-box;" placeholder="nurdin1314/kasirpro-data">
+                            </div>
+                            <div>
+                                <label style="font-size:11px;font-weight:600;color:#4c1d95;">Branch</label>
+                                <input type="text" id="sGhBranch" style="width:100%;padding:5px 6px;border:1px solid #c4b5fd;border-radius:4px;font-size:11px;box-sizing:border-box;" value="main">
+                            </div>
+                            <div style="grid-column:1/-1;display:flex;gap:8px;align-items:center;margin-top:4px;">
+                                <button class="btn-sm btn-primary" style="background:#7c3aed;border-color:#6d28d9;white-space:nowrap;" onclick="syncToGitHub()"><i class="fab fa-github"></i> Push ke GitHub</button>
+                                <button class="btn-sm btn-secondary" style="white-space:nowrap;" onclick="pullFromGitHub()"><i class="fas fa-download"></i> Pull dari GitHub</button>
+                                <span id="ghSyncStatus" style="font-size:11px;color:#6d4b9e;">Siap</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="settings-section">
@@ -4516,12 +4540,98 @@ function loadDataFromLocal(key,fallback){
   try{var d=JSON.parse(localStorage.getItem('kasirpro_'+key));if(d&&Array.isArray(d))return d;}catch(e){}
   return fallback;
 }
-/* ===== FIREBASE REALTIME SYNC ===== */
-/* ===== END FIREBASE ===== */
+/* ===== GITHUB SYNC ===== */
+var ghToken='',ghRepo='',ghBranch='main',ghSyncing=false;
+
+function loadGhConfig(){
+  try{var s=JSON.parse(localStorage.getItem('kasirpro_settings'));if(s){ghToken=s.ghToken||'';ghRepo=s.ghRepo||'';ghBranch=s.ghBranch||'main';}}catch(e){}
+}
+
+function getGhApiUrl(){return 'https://api.github.com/repos/'+ghRepo+'/contents/kasirpro-data.json';}
+
+function syncToGitHub(){
+  loadGhConfig();
+  ghToken=document.getElementById('sGhToken').value.trim();
+  ghRepo=document.getElementById('sGhRepo').value.trim();
+  ghBranch=document.getElementById('sGhBranch').value.trim()||'main';
+  if(!ghToken||!ghRepo){showToast('Isi GitHub Token dan Repo dulu','error');return;}
+  if(ghSyncing)return;
+  ghSyncing=true;
+  document.getElementById('ghSyncStatus').textContent='Mengirim...';
+  var payload={cabangId:cabangId||'',inventory:inventoryData,penjualan:penjualanData,pembelian:pembelianData,pelanggan:pelangganData,supplier:abhSupplierData,kas:kasData,biaya:biayaData,hutang:hutangData,piutang:piutangData,room:roomData,pemasukan:pemasukanData,pengeluaran:pengeluaranData,mutasikas:mutasiKasData,mutasibarang:mutasiBarangData,stokopname:stokOpnameData,user:userData};
+  var content=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
+  // Cek file dulu untuk dapat SHA
+  fetch(getGhApiUrl(),{headers:{Authorization:'Bearer '+ghToken,Accept:'application/vnd.github+json'}}).then(function(r){
+    if(r.status===200)return r.json();
+    if(r.status===404)return null;
+    throw new Error('HTTP '+r.status);
+  }).then(function(existing){
+    var body={message:'Sync data '+cabangId+' '+new Date().toISOString().slice(0,16),content:content,branch:ghBranch};
+    if(existing&&existing.sha)body.sha=existing.sha;
+    return fetch(getGhApiUrl(),{method:'PUT',headers:{Authorization:'Bearer '+ghToken,Accept:'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+  }).then(function(r){
+    if(!r.ok)return r.json().then(function(e){throw new Error(e.message||'Gagal push');});
+    return r.json();
+  }).then(function(){
+    document.getElementById('ghSyncStatus').textContent='OK '+new Date().toLocaleTimeString();
+    showToast('Data berhasil di-push ke GitHub','success');
+    ghSyncing=false;
+  }).catch(function(e){
+    document.getElementById('ghSyncStatus').textContent='Error';
+    showToast('Gagal push: '+e.message,'error');
+    ghSyncing=false;
+  });
+}
+
+function pullFromGitHub(){
+  loadGhConfig();
+  ghToken=document.getElementById('sGhToken').value.trim();
+  ghRepo=document.getElementById('sGhRepo').value.trim();
+  ghBranch=document.getElementById('sGhBranch').value.trim()||'main';
+  if(!ghToken||!ghRepo){showToast('Isi GitHub Token dan Repo dulu','error');return;}
+  if(ghSyncing)return;
+  ghSyncing=true;
+  document.getElementById('ghSyncStatus').textContent='Mengambil...';
+  fetch(getGhApiUrl()+'?ref='+ghBranch,{headers:{Authorization:'Bearer '+ghToken,Accept:'application/vnd.github+json'}}).then(function(r){
+    if(!r.ok){if(r.status===404)throw new Error('File data belum ada. Push dulu dari cabang pertama');throw new Error('HTTP '+r.status);}
+    return r.json();
+  }).then(function(d){
+    var json=decodeURIComponent(escape(atob(d.content)));
+    var data=JSON.parse(json);
+    if(data.inventory&&data.inventory.length){inventoryData=data.inventory;migrateStockCabang();}
+    if(data.penjualan&&data.penjualan.length) penjualanData=data.penjualan;
+    if(data.pembelian&&data.pembelian.length) pembelianData=data.pembelian;
+    if(data.pelanggan&&data.pelanggan.length) pelangganData=data.pelanggan;
+    if(data.supplier&&data.supplier.length) abhSupplierData=data.supplier;
+    if(data.kas&&data.kas.length) kasData=data.kas;
+    if(data.biaya&&data.biaya.length) biayaData=data.biaya;
+    if(data.hutang&&data.hutang.length) hutangData=data.hutang;
+    if(data.piutang&&data.piutang.length) piutangData=data.piutang;
+    if(data.room&&data.room.length) roomData=data.room;
+    if(data.pemasukan&&data.pemasukan.length) pemasukanData=data.pemasukan;
+    if(data.pengeluaran&&data.pengeluaran.length) pengeluaranData=data.pengeluaran;
+    if(data.mutasikas&&data.mutasikas.length) mutasiKasData=data.mutasikas;
+    if(data.mutasibarang&&data.mutasibarang.length) mutasiBarangData=data.mutasibarang;
+    if(data.stokopname&&data.stokopname.length) stokOpnameData=data.stokopname;
+    if(data.user&&data.user.length) userData=data.user;
+    saveAllData();
+    if(typeof renderTable==='function')renderTable();
+    if(typeof updateStatusBar==='function')updateStatusBar();
+    if(typeof populateKasDropdowns==='function')populateKasDropdowns();
+    document.getElementById('ghSyncStatus').textContent='OK '+new Date().toLocaleTimeString();
+    showToast('Data berhasil di-pull dari GitHub','success');
+    ghSyncing=false;
+  }).catch(function(e){
+    document.getElementById('ghSyncStatus').textContent='Error';
+    showToast('Gagal pull: '+e.message,'error');
+    ghSyncing=false;
+  });
+}
+/* ===== END GITHUB SYNC ===== */
 
 function saveAllData(){
   persistAllToLocal();
-  syncToFirebase();
+  if(ghToken&&ghRepo) syncToGitHub();
   uploadAllToServer();
   doSyncToServer();
   saveDataToLocal('pembelian',pembelianData);
@@ -4719,8 +4829,6 @@ function initData(){
       finishInit();
     }
   });
-  initFirebase();
-  listenFirebase();
 }
 
 function finishInit(){
@@ -4731,9 +4839,10 @@ function finishInit(){
   updateStatusBar();
   populateKasDropdowns();
   populateAllKategoriDropdowns();
+  loadGhConfig();
   setInterval(function(){
-    if(getFirebaseConfig()) syncToFirebase();
-  },30000);
+    if(ghToken&&ghRepo) syncToGitHub();
+  },60000);
 }
 
 function pullMasterFromServer(){
@@ -5323,9 +5432,9 @@ function updateApjHeaderLabel(){
   if(cabEl&&cabSel) cabEl.textContent=cabSel.value||'C001';
   if(outEl&&outSel) outEl.textContent=outSel.value||'OUTLET';
 }
-function openSettings(){try{loadSettings();loadSyncUrlFromSettings();var s=settingsData||{};document.getElementById('sTheme').value=s.theme||getStoredTheme();document.getElementById('sNama').value=s.nama||'';document.getElementById('sTelp').value=s.telp||'';document.getElementById('sAlamat').value=s.alamat||'';document.getElementById('sKota').value=s.kota||'';document.getElementById('sPropinsi').value=s.propinsi||'';document.getElementById('sNegara').value=s.negara||'Indonesia';document.getElementById('sNpwp').value=s.npwp||'';document.getElementById('sNppkp').value=s.nppkp||'';document.getElementById('sSlogan').value=s.slogan||'';document.getElementById('sRefR21').value=s.refR21||'R21';document.getElementById('sRefR22').value=s.refR22||'R22';document.getElementById('sRefR23').value=s.refR23||'R23';document.getElementById('sRefR43').value=s.refR43||'R43';document.getElementById('sRefR44').value=s.refR44||'R44';document.getElementById('sRefR31').value=s.refR31||'R31';document.getElementById('sRefR32').value=s.refR32||'R32';document.getElementById('sRefR33').value=s.refR33||'R33';document.getElementById('sRefR34').value=s.refR34||'R34';document.getElementById('sRefR35').value=s.refR35||'R35';document.getElementById('sRefR36').value=s.refR36||'R36';document.getElementById('sSyncUrl').value=syncUrl||'';document.getElementById('syncCabangIdInfo').textContent='ID: '+cabangId;var _fb=s.firebaseConfig||{};document.getElementById('sFbApiKey').value=_fb.apiKey||'';document.getElementById('sFbProjectId').value=_fb.projectId||'';document.getElementById('sFbDbUrl').value=_fb.databaseURL||'';updateSyncStatusDisplay();renderOutletList();renderCabangList();if(s.logo){document.getElementById('settingsLogoPreview').src=s.logo;document.getElementById('settingsLogoPreview').style.display='block';document.getElementById('settingsLogoIcon').style.display='none';document.getElementById('settingsLogoText').textContent='Ganti Logo';}else{document.getElementById('settingsLogoPreview').style.display='none';document.getElementById('settingsLogoIcon').style.display='block';document.getElementById('settingsLogoText').textContent='Upload Logo';}document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));var menuEl=document.querySelector('.menu-item[onclick="openSettings()"]');if(menuEl)menuEl.classList.add('active');document.getElementById('topTitle').textContent='Pengaturan';document.getElementById('settingsPanel').style.display='flex';loadBackupList();var _act=isActivated();document.getElementById('sNama').readOnly=_act;document.getElementById('sNama').title=_act?'Tidak dapat diubah setelah aktivasi':'';document.getElementById('sNama').style.background=_act?'#f3f4f6':'';document.getElementById('sAlamat').readOnly=_act;document.getElementById('sAlamat').title=_act?'Tidak dapat diubah setelah aktivasi':'';document.getElementById('sAlamat').style.background=_act?'#f3f4f6':'';document.getElementById('sNamaLock').style.display=_act?'inline':'none';document.getElementById('sAlamatLock').style.display=_act?'inline':'none';updateActivationStatus();}catch(e){alert('ERROR: '+e.message);}}
+function openSettings(){try{loadSettings();loadSyncUrlFromSettings();var s=settingsData||{};document.getElementById('sTheme').value=s.theme||getStoredTheme();document.getElementById('sNama').value=s.nama||'';document.getElementById('sTelp').value=s.telp||'';document.getElementById('sAlamat').value=s.alamat||'';document.getElementById('sKota').value=s.kota||'';document.getElementById('sPropinsi').value=s.propinsi||'';document.getElementById('sNegara').value=s.negara||'Indonesia';document.getElementById('sNpwp').value=s.npwp||'';document.getElementById('sNppkp').value=s.nppkp||'';document.getElementById('sSlogan').value=s.slogan||'';document.getElementById('sRefR21').value=s.refR21||'R21';document.getElementById('sRefR22').value=s.refR22||'R22';document.getElementById('sRefR23').value=s.refR23||'R23';document.getElementById('sRefR43').value=s.refR43||'R43';document.getElementById('sRefR44').value=s.refR44||'R44';document.getElementById('sRefR31').value=s.refR31||'R31';document.getElementById('sRefR32').value=s.refR32||'R32';document.getElementById('sRefR33').value=s.refR33||'R33';document.getElementById('sRefR34').value=s.refR34||'R34';document.getElementById('sRefR35').value=s.refR35||'R35';document.getElementById('sRefR36').value=s.refR36||'R36';document.getElementById('sSyncUrl').value=syncUrl||'';document.getElementById('sGhToken').value=s.ghToken||'';document.getElementById('sGhRepo').value=s.ghRepo||'';document.getElementById('sGhBranch').value=s.ghBranch||'main';document.getElementById('syncCabangIdInfo').textContent='ID: '+cabangId;var _fb=s.firebaseConfig||{};document.getElementById('sFbApiKey').value=_fb.apiKey||'';document.getElementById('sFbProjectId').value=_fb.projectId||'';document.getElementById('sFbDbUrl').value=_fb.databaseURL||'';updateSyncStatusDisplay();renderOutletList();renderCabangList();if(s.logo){document.getElementById('settingsLogoPreview').src=s.logo;document.getElementById('settingsLogoPreview').style.display='block';document.getElementById('settingsLogoIcon').style.display='none';document.getElementById('settingsLogoText').textContent='Ganti Logo';}else{document.getElementById('settingsLogoPreview').style.display='none';document.getElementById('settingsLogoIcon').style.display='block';document.getElementById('settingsLogoText').textContent='Upload Logo';}document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));var menuEl=document.querySelector('.menu-item[onclick="openSettings()"]');if(menuEl)menuEl.classList.add('active');document.getElementById('topTitle').textContent='Pengaturan';document.getElementById('settingsPanel').style.display='flex';loadBackupList();var _act=isActivated();document.getElementById('sNama').readOnly=_act;document.getElementById('sNama').title=_act?'Tidak dapat diubah setelah aktivasi':'';document.getElementById('sNama').style.background=_act?'#f3f4f6':'';document.getElementById('sAlamat').readOnly=_act;document.getElementById('sAlamat').title=_act?'Tidak dapat diubah setelah aktivasi':'';document.getElementById('sAlamat').style.background=_act?'#f3f4f6':'';document.getElementById('sNamaLock').style.display=_act?'inline':'none';document.getElementById('sAlamatLock').style.display=_act?'inline':'none';updateActivationStatus();}catch(e){alert('ERROR: '+e.message);}}
 function closeSettings(){document.getElementById('settingsPanel').style.display='none';document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));var menuEl=document.querySelector('.menu-item[onclick="openSettings()"]');if(menuEl)menuEl.classList.remove('active');}
-function saveSettings(){var _nama=document.getElementById('sNama').value;var _alamat=document.getElementById('sAlamat').value;if(isActivated()){_nama=_activatedNama||_nama;}var _theme=document.getElementById('sTheme').value||'light';var _accent=getStoredAccent();settingsData={nama:_nama,alamat:_alamat,telp:document.getElementById('sTelp').value,kota:document.getElementById('sKota').value,propinsi:document.getElementById('sPropinsi').value,negara:document.getElementById('sNegara').value,npwp:document.getElementById('sNpwp').value,nppkp:document.getElementById('sNppkp').value,slogan:document.getElementById('sSlogan').value,theme:_theme,accent:_accent,refR21:document.getElementById('sRefR21').value,refR22:document.getElementById('sRefR22').value,refR23:document.getElementById('sRefR23').value,refR43:document.getElementById('sRefR43').value,refR44:document.getElementById('sRefR44').value,refR31:document.getElementById('sRefR31').value,refR32:document.getElementById('sRefR32').value,refR33:document.getElementById('sRefR33').value,refR34:document.getElementById('sRefR34').value,refR35:document.getElementById('sRefR35').value,refR36:document.getElementById('sRefR36').value,syncUrl:document.getElementById('sSyncUrl').value,logo:settingsData.logo||'',outletData:settingsData.outletData||[],cabangData:settingsData.cabangData||[]};localStorage.setItem('kasirpro_settings',JSON.stringify(settingsData));localStorage.setItem('kasirpro_theme',_theme);applyTheme(_theme,true);document.documentElement.setAttribute('data-accent',_accent);syncUrl=settingsData.syncUrl||'';closeSettings();showToast('Pengaturan berhasil disimpan','success');updateSidebar();}
+function saveSettings(){var _nama=document.getElementById('sNama').value;var _alamat=document.getElementById('sAlamat').value;if(isActivated()){_nama=_activatedNama||_nama;}var _theme=document.getElementById('sTheme').value||'light';var _accent=getStoredAccent();settingsData={nama:_nama,alamat:_alamat,telp:document.getElementById('sTelp').value,kota:document.getElementById('sKota').value,propinsi:document.getElementById('sPropinsi').value,negara:document.getElementById('sNegara').value,npwp:document.getElementById('sNpwp').value,nppkp:document.getElementById('sNppkp').value,slogan:document.getElementById('sSlogan').value,theme:_theme,accent:_accent,refR21:document.getElementById('sRefR21').value,refR22:document.getElementById('sRefR22').value,refR23:document.getElementById('sRefR23').value,refR43:document.getElementById('sRefR43').value,refR44:document.getElementById('sRefR44').value,refR31:document.getElementById('sRefR31').value,refR32:document.getElementById('sRefR32').value,refR33:document.getElementById('sRefR33').value,refR34:document.getElementById('sRefR34').value,refR35:document.getElementById('sRefR35').value,refR36:document.getElementById('sRefR36').value,syncUrl:document.getElementById('sSyncUrl').value,ghToken:document.getElementById('sGhToken').value,ghRepo:document.getElementById('sGhRepo').value,ghBranch:document.getElementById('sGhBranch').value,logo:settingsData.logo||'',outletData:settingsData.outletData||[],cabangData:settingsData.cabangData||[]};localStorage.setItem('kasirpro_settings',JSON.stringify(settingsData));localStorage.setItem('kasirpro_theme',_theme);applyTheme(_theme,true);document.documentElement.setAttribute('data-accent',_accent);syncUrl=settingsData.syncUrl||'';closeSettings();showToast('Pengaturan berhasil disimpan','success');updateSidebar();}
 
 /* ===================== BACKUP / RESTORE / MAINTENANCE ===================== */
 function serverBackupNow(){
