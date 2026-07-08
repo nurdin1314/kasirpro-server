@@ -1757,18 +1757,55 @@
         </div>
         <!-- ===== MUTASI BARANG PANEL ===== -->
         <div id="mutasiBarangPanel" style="display:none;flex:1;flex-direction:column;overflow:hidden;padding:12px;background:#f8fafc;">
-            <div class="toolbar" id="mutasiBarangToolbar">
-                <button class="tool-btn" onclick="openAddMutasiBarang()"><i class="fas fa-plus"></i><span class="tip">Tambah</span></button>
-                <button class="tool-btn danger" onclick="deleteMutasiBarang()"><i class="fas fa-trash-can"></i><span class="tip">Hapus</span></button>
-                <div style="width:1px;height:24px;background:#d1d5db;margin:0 6px;"></div>
-                <input type="text" class="search-input" placeholder="Cari mutasi barang..." oninput="searchMutasiBarang(this.value)">
+          <!-- LIST VIEW (sessions) -->
+          <div id="mbListView" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+            <div class="toolbar">
+              <button class="tool-btn" onclick="mbBaru()"><i class="fas fa-plus"></i><span class="tip">Baru</span></button>
+              <button class="tool-btn danger" onclick="mbHapusSesi()"><i class="fas fa-trash-can"></i><span class="tip">Hapus</span></button>
+              <div style="width:1px;height:24px;background:#d1d5db;margin:0 6px;"></div>
+              <button class="tool-btn" onclick="mbCetak()"><i class="fas fa-print"></i><span class="tip">Cetak</span></button>
+              <input type="text" class="search-input" placeholder="Cari sesi..." oninput="mbCari(this.value)" style="margin-left:6px;">
+              <span id="mbSummary" style="font-size:11px;color:#6b7280;margin-left:auto;">Total: 0 sesi</span>
             </div>
             <div class="table-wrap" style="flex:1;overflow:auto;background:#fff;border:1px solid #d1d5db;border-radius:6px;">
-                <table class="data-table" style="width:100%;">
-                    <thead><tr><th>Tanggal</th><th>Barang</th><th>Tipe</th><th style="text-align:right;">Jumlah</th><th>Keterangan</th></tr></thead>
-                    <tbody id="mutasiBarangTableBody"></tbody>
-                </table>
+              <table class="data-table" style="width:100%;">
+                <thead><tr><th>Tanggal</th><th>Status</th><th style="text-align:right;">Total Item</th><th>Keterangan</th></tr></thead>
+                <tbody id="mbSesiTableBody"></tbody>
+              </table>
             </div>
+          </div>
+          <!-- ITEM ENTRY VIEW -->
+          <div id="mbItemView" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+            <div class="toolbar" style="padding:6px 8px;">
+              <button class="tool-btn" onclick="mbKembali()"><i class="fas fa-arrow-left"></i><span class="tip">Kembali</span></button>
+              <button class="tool-btn" style="background:#e8821a;color:#fff;" onclick="mbProses()"><i class="fas fa-check-double"></i><span class="tip">Proses</span></button>
+              <div style="width:1px;height:24px;background:#d1d5db;margin:0 6px;"></div>
+              <span style="font-size:11px;font-weight:600;color:#374151;">Tgl:</span>
+              <input type="date" id="mbSesiTanggal" style="padding:2px 6px;border:1px solid #d1d5db;border-radius:4px;font-size:11px;">
+              <textarea id="mbSesiKet" placeholder="Keterangan sesi..." style="flex:1;padding:4px 8px;border:1px solid #d1d5db;border-radius:4px;font-size:11px;height:28px;min-width:120px;resize:none;"></textarea>
+              <div style="width:1px;height:24px;background:#d1d5db;margin:0 6px;"></div>
+              <button class="tool-btn" onclick="mbTambahItem()"><i class="fas fa-plus"></i> Tambah Barang</button>
+              <span id="mbItemSummary" style="font-size:11px;color:#6b7280;margin-left:auto;">0 item</span>
+            </div>
+            <div class="table-wrap" style="flex:1;overflow:auto;background:#fff;border:1px solid #d1d5db;border-radius:6px;margin:0 8px 8px;">
+              <table class="data-table" style="width:100%;">
+                <thead><tr><th style="width:30px;">#</th><th>Barang</th><th>Tipe</th><th>Cabang Asal</th><th>Cabang Tujuan</th><th style="text-align:right;">Jumlah</th><th style="width:40px;"></th></tr></thead>
+                <tbody id="mbItemTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <!-- MODAL tambah item -->
+          <div class="modal-overlay" id="mbItemModal"><div style="width:95vw;max-width:480px;background:#fff;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.3);overflow:hidden;">
+            <div style="background:linear-gradient(180deg,#4a6fa5,#3a5a8a);padding:12px 16px;display:flex;align-items:center;gap:10px;"><h3 style="flex:1;color:#fff;font-size:14px;font-weight:700;margin:0;"><i class="fas fa-box"></i> Tambah Barang</h3><button onclick="mbTutupModal()" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">&times;</button></div>
+            <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+              <div class="form-field"><label>Barang</label><input type="text" id="mbAddBarang" class="field-value" placeholder="Nama barang" list="mbBarangList"><datalist id="mbBarangList"></datalist></div>
+              <div class="form-field"><label>Tipe</label><select id="mbAddTipe" class="field-value" onchange="mbModalToggleCabang()"><option value="Masuk">Masuk</option><option value="Keluar">Keluar</option><option value="Pindah">Pindah Cabang</option></select></div>
+              <div class="form-field" id="mbAddAsalRow"><label>Cabang Asal</label><select id="mbAddAsal" class="field-value"><option value="">- Pilih -</option></select></div>
+              <div class="form-field" id="mbAddTujuanRow"><label>Cabang Tujuan</label><select id="mbAddTujuan" class="field-value"><option value="">- Pilih -</option></select></div>
+              <div class="form-field"><label>Jumlah</label><input type="number" id="mbAddJumlah" class="field-value" value="1" min="0.01" step="any"></div>
+            </div>
+            <div style="padding:12px 16px;background:#f8fafc;display:flex;justify-content:flex-end;gap:8px;"><button class="btn-cancel" onclick="mbTutupModal()">Batal</button><button class="btn-save" onclick="mbSimpanItem()"><i class="fas fa-plus"></i> Tambahkan</button></div>
+          </div></div>
         </div>
         <!-- ===== FORM PEMASUKAN ===== -->
         <div class="modal-overlay" id="pemasukanFormModal"><div style="width:95vw;max-width:480px;background:#fff;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.3);overflow:hidden;">
@@ -1806,18 +1843,7 @@
             </div>
             <div style="padding:12px 16px;background:#f8fafc;display:flex;justify-content:flex-end;gap:8px;"><button class="btn-cancel" onclick="closeMutasiKasForm()">Batal</button><button class="btn-save" onclick="saveMutasiKas()"><i class="fas fa-floppy-disk"></i> Simpan</button></div>
         </div></div>
-        <!-- ===== FORM MUTASI BARANG ===== -->
-        <div class="modal-overlay" id="mutasiBarangFormModal"><div style="width:95vw;max-width:480px;background:#fff;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.3);overflow:hidden;">
-            <div style="background:linear-gradient(180deg,#4a6fa5,#3a5a8a);padding:12px 16px;display:flex;align-items:center;gap:10px;"><h3 id="mutasiBarangFormTitle" style="flex:1;color:#fff;font-size:14px;font-weight:700;margin:0;"><i class="fas fa-arrows-rotate"></i> Tambah Mutasi Barang</h3><button onclick="closeMutasiBarangForm()" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;">&times;</button></div>
-            <div style="padding:16px;display:flex;flex-direction:column;gap:12px;">
-                <div class="form-field"><label>Tanggal</label><input type="date" id="mbTanggal" class="field-value"></div>
-                <div class="form-field"><label>Barang</label><input type="text" id="mbNamaBarang" class="field-value" placeholder="Nama barang" list="barangList"><datalist id="barangList"></datalist></div>
-                <div class="form-field"><label>Tipe</label><select id="mbTipe" class="field-value"><option value="Masuk">Masuk</option><option value="Keluar">Keluar</option></select></div>
-                <div class="form-field"><label>Jumlah</label><input type="number" id="mbJumlah" class="field-value" value="1" min="0.01" step="any"></div>
-                <div class="form-field"><label>Keterangan</label><textarea id="mbKeterangan" class="field-value" style="height:60px;"></textarea></div>
-            </div>
-            <div style="padding:12px 16px;background:#f8fafc;display:flex;justify-content:flex-end;gap:8px;"><button class="btn-cancel" onclick="closeMutasiBarangForm()">Batal</button><button class="btn-save" onclick="saveMutasiBarang()"><i class="fas fa-floppy-disk"></i> Simpan</button></div>
-        </div></div>
+
 
 <!-- ===== STOK OPNAME PANEL ===== -->
 <div id="stokOpnamePanel" style="display:none;flex:1;flex-direction:column;overflow:hidden;padding:12px;background:#f8fafc;">
@@ -4558,7 +4584,7 @@ function syncToGitHub(afterPull){
   if(ghSyncing)return;
   ghSyncing=true;
   document.getElementById('ghSyncStatus').textContent='Mengirim...';
-  var payload={cabangId:cabangId||'',inventory:inventoryData,penjualan:penjualanData,pembelian:pembelianData,pelanggan:pelangganData,supplier:abhSupplierData,kas:kasData,biaya:biayaData,hutang:hutangData,piutang:piutangData,room:roomData,pemasukan:pemasukanData,pengeluaran:pengeluaranData,mutasikas:mutasiKasData,mutasibarang:mutasiBarangData,stokopname:stokOpnameData,user:userData};
+  var payload={cabangId:cabangId||'',inventory:inventoryData,penjualan:penjualanData,pembelian:pembelianData,pelanggan:pelangganData,supplier:abhSupplierData,kas:kasData,biaya:biayaData,hutang:hutangData,piutang:piutangData,room:roomData,pemasukan:pemasukanData,pengeluaran:pengeluaranData,mutasikas:mutasiKasData,mutasibarang:mutasiSesiData,stokopname:stokOpnameData,user:userData};
   var content=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
   fetch(getGhApiUrl(),{headers:{Authorization:'Bearer '+ghToken,Accept:'application/vnd.github+json'}}).then(function(r){
     if(r.status===200)return r.json();
@@ -4609,7 +4635,7 @@ function pullFromGitHub(){
     if(data.pemasukan&&data.pemasukan.length) pemasukanData=data.pemasukan;
     if(data.pengeluaran&&data.pengeluaran.length) pengeluaranData=data.pengeluaran;
     if(data.mutasikas&&data.mutasikas.length) mutasiKasData=data.mutasikas;
-    if(data.mutasibarang&&data.mutasibarang.length) mutasiBarangData=data.mutasibarang;
+    if(data.mutasibarang&&data.mutasibarang.length) mutasiSesiData=data.mutasibarang;
     if(data.stokopname&&data.stokopname.length) stokOpnameData=data.stokopname;
     if(data.user&&data.user.length) userData=data.user;
     saveAllData();
@@ -4644,7 +4670,7 @@ function saveAllData(){
   saveDataToLocal('pemasukan',pemasukanData);
   saveDataToLocal('pengeluaran',pengeluaranData);
   saveDataToLocal('mutasikas',mutasiKasData);
-  saveDataToLocal('mutasibarang',mutasiBarangData);
+  saveDataToLocal('mutasibarang',mutasiSesiData);
   saveDataToLocal('stokopname',stokOpnameData);
 }
 var SERVER_URL = 'http://' + location.host;
@@ -4894,7 +4920,7 @@ function loadLocalFallback(){
   pemasukanData=loadDataFromLocal('pemasukan',pemasukanData);
   pengeluaranData=loadDataFromLocal('pengeluaran',pengeluaranData);
   mutasiKasData=loadDataFromLocal('mutasikas',mutasiKasData);
-  mutasiBarangData=loadDataFromLocal('mutasibarang',mutasiBarangData);
+  mutasiSesiData=loadDataFromLocal('mutasibarang',mutasiSesiData);
   stokOpnameData=loadDataFromLocal('stokopname',stokOpnameData);
 }
 function setBarangViewMode(mode){
@@ -5848,7 +5874,7 @@ function printKasHistory(){
 function openPemasukanPanel(el){document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));if(el)el.classList.add('active');document.getElementById('topTitle').textContent='Pemasukan';hidePanels();document.getElementById('pemasukanPanel').style.display='flex';renderPemasukan();}
 function openPengeluaranPanel(el){document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));if(el)el.classList.add('active');document.getElementById('topTitle').textContent='Pengeluaran';hidePanels();document.getElementById('pengeluaranPanel').style.display='flex';renderPengeluaran();}
 function openMutasiKasPanel(el){document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));if(el)el.classList.add('active');document.getElementById('topTitle').textContent='Mutasi Kas';hidePanels();document.getElementById('mutasiKasPanel').style.display='flex';renderMutasiKas();}
-function openMutasiBarangPanel(el){document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));if(el)el.classList.add('active');document.getElementById('topTitle').textContent='Mutasi Barang';hidePanels();document.getElementById('mutasiBarangPanel').style.display='flex';renderMutasiBarang();}
+
 function openCashFlowPanel(el){
   document.querySelectorAll('.menu-item').forEach(function(m){m.classList.remove('active');});
   if(el) el.classList.add('active');
@@ -6614,34 +6640,73 @@ function prosesLapCabang(){
 var pemasukanData=[];
 var pengeluaranData=[];
 var mutasiKasData=[];
-var mutasiBarangData=[];
 var stokOpnameData=[];
-var selectedPemasukan=null,selectedPengeluaran=null,selectedMutasiKas=null,selectedMutasiBarang=null;
+var selectedPemasukan=null,selectedPengeluaran=null,selectedMutasiKas=null;
 function renderPemasukan(){var d=pemasukanData,tb=document.getElementById('pemasukanTableBody'),fmt=function(n){return'Rp '+Number(n||0).toLocaleString('id-ID');};tb.innerHTML='';var total=0;d.forEach(function(r){total+=r.jumlah||0;tb.innerHTML+='<tr style="cursor:pointer;" onclick="selectedPemasukan='+r.id+';document.querySelectorAll(\'#pemasukanTableBody tr\').forEach(function(t){t.classList.remove(\'selected\')});this.classList.add(\'selected\')"><td>'+r.tanggal+'</td><td>'+r.keterangan+'</td><td style="text-align:right;font-weight:700;color:#16a34a;">'+fmt(r.jumlah)+'</td><td>'+r.kas+'</td><td>'+(r.catatan||'')+'</td></tr>';});document.getElementById('totalPemasukan').textContent=fmt(total);}
 function renderPengeluaran(){var d=pengeluaranData,tb=document.getElementById('pengeluaranTableBody'),fmt=function(n){return'Rp '+Number(n||0).toLocaleString('id-ID');};tb.innerHTML='';var total=0;d.forEach(function(r){total+=r.jumlah||0;tb.innerHTML+='<tr style="cursor:pointer;" onclick="selectedPengeluaran='+r.id+';document.querySelectorAll(\'#pengeluaranTableBody tr\').forEach(function(t){t.classList.remove(\'selected\')});this.classList.add(\'selected\')"><td>'+r.tanggal+'</td><td>'+r.keterangan+'</td><td style="text-align:right;font-weight:700;color:#dc2626;">'+fmt(r.jumlah)+'</td><td>'+r.kas+'</td><td>'+(r.catatan||'')+'</td></tr>';});document.getElementById('totalPengeluaran').textContent=fmt(total);}
 function renderMutasiKas(){var d=mutasiKasData,tb=document.getElementById('mutasiKasTableBody'),fmt=function(n){return'Rp '+Number(n||0).toLocaleString('id-ID');};tb.innerHTML='';d.forEach(function(r){tb.innerHTML+='<tr style="cursor:pointer;" onclick="selectedMutasiKas='+r.id+';document.querySelectorAll(\'#mutasiKasTableBody tr\').forEach(function(t){t.classList.remove(\'selected\')});this.classList.add(\'selected\')"><td>'+r.tanggal+'</td><td>'+r.dari+'</td><td>'+r.ke+'</td><td style="text-align:right;font-weight:700;">'+fmt(r.jumlah)+'</td><td>'+(r.keterangan||'')+'</td></tr>';});}
-function renderMutasiBarang(){var d=mutasiBarangData,tb=document.getElementById('mutasiBarangTableBody');tb.innerHTML='';d.forEach(function(r){var cls=r.tipe==='Masuk'?'#16a34a':'#dc2626';tb.innerHTML+='<tr style="cursor:pointer;" onclick="selectedMutasiBarang='+r.id+';document.querySelectorAll(\'#mutasiBarangTableBody tr\').forEach(function(t){t.classList.remove(\'selected\')});this.classList.add(\'selected\')"><td>'+r.tanggal+'</td><td>'+r.barang+'</td><td style="color:'+cls+';font-weight:600;">'+r.tipe+'</td><td style="text-align:right;">'+r.jumlah+'</td><td>'+(r.keterangan||'')+'</td></tr>';});}
+
 function searchPemasukan(q){document.getElementById('pemasukanTableBody').querySelectorAll('tr').forEach(function(t){t.style.display=t.textContent.toLowerCase().includes((q||'').toLowerCase())?'':'none';});}
 function searchPengeluaran(q){document.getElementById('pengeluaranTableBody').querySelectorAll('tr').forEach(function(t){t.style.display=t.textContent.toLowerCase().includes((q||'').toLowerCase())?'':'none';});}
 function searchMutasiKas(q){document.getElementById('mutasiKasTableBody').querySelectorAll('tr').forEach(function(t){t.style.display=t.textContent.toLowerCase().includes((q||'').toLowerCase())?'':'none';});}
-function searchMutasiBarang(q){document.getElementById('mutasiBarangTableBody').querySelectorAll('tr').forEach(function(t){t.style.display=t.textContent.toLowerCase().includes((q||'').toLowerCase())?'':'none';});}
+
 function openAddPemasukan(){selectedPemasukan=null;document.getElementById('pemasukanFormTitle').innerHTML='<i class="fas fa-circle-plus"></i> Tambah Pemasukan';document.getElementById('pmTanggal').value=new Date().toISOString().split('T')[0];document.getElementById('pmKeterangan').value='';document.getElementById('pmJumlah').value='';document.getElementById('pmKas').value='KAS UTAMA';document.getElementById('pmCatatan').value='';document.getElementById('pemasukanFormModal').classList.add('show');}
 function openAddPengeluaran(){selectedPengeluaran=null;document.getElementById('pengeluaranFormTitle').innerHTML='<i class="fas fa-circle-minus"></i> Tambah Pengeluaran';document.getElementById('pgTanggal').value=new Date().toISOString().split('T')[0];document.getElementById('pgKeterangan').value='';document.getElementById('pgJumlah').value='';document.getElementById('pgKas').value='KAS UTAMA';document.getElementById('pgCatatan').value='';document.getElementById('pengeluaranFormModal').classList.add('show');}
 function openAddMutasiKas(){selectedMutasiKas=null;document.getElementById('mutasiKasFormTitle').innerHTML='<i class="fas fa-right-left"></i> Tambah Mutasi Kas';document.getElementById('mkTanggal').value=new Date().toISOString().split('T')[0];document.getElementById('mkDari').value='KAS UTAMA';document.getElementById('mkKe').value='KAS TOKO';document.getElementById('mkJumlah').value='';document.getElementById('mkKeterangan').value='';document.getElementById('mutasiKasFormModal').classList.add('show');}
-function openAddMutasiBarang(){
-    selectedMutasiBarang=null;
-    document.getElementById('mutasiBarangFormTitle').innerHTML='<i class="fas fa-arrows-rotate"></i> Tambah Mutasi Barang';
-    document.getElementById('mbTanggal').value=new Date().toISOString().split('T')[0];
-    document.getElementById('mbNamaBarang').value='';
-    document.getElementById('mbTipe').value='Masuk';
-    document.getElementById('mbJumlah').value='1';
-    document.getElementById('mbKeterangan').value='';
-    document.getElementById('mutasiBarangFormModal').classList.add('show');
+function mbModalToggleCabang(){
+  var tipe=document.getElementById('mbAddTipe').value;
+  document.getElementById('mbAddAsalRow').style.display=(tipe==='Keluar'||tipe==='Pindah')?'block':'none';
+  document.getElementById('mbAddTujuanRow').style.display=(tipe==='Masuk'||tipe==='Pindah')?'block':'none';
 }
+function mbPopulateCabang(){
+  loadSettings();
+  var cabangs=(settingsData&&settingsData.cabangData)||[];
+  ['mbAddAsal','mbAddTujuan'].forEach(function(id){
+    var sel=document.getElementById(id);
+    sel.innerHTML='<option value="">- Pilih -</option>';
+    cabangs.forEach(function(c){sel.innerHTML+='<option value="'+c.replace(/"/g,'&quot;')+'">'+c.replace(/</g,'&lt;')+'</option>';});
+  });
+}
+var mutasiSesiData=[];var _mbCurSesi=null;
+function openMutasiBarangPanel(el){document.querySelectorAll('.menu-item').forEach(function(m){m.classList.remove('active');});if(el)el.classList.add('active');document.getElementById('topTitle').textContent='Mutasi Barang';hidePanels();document.getElementById('mutasiBarangPanel').style.display='flex';mbTampilList();}
+function mbTampilList(){document.getElementById('mbListView').style.display='flex';document.getElementById('mbItemView').style.display='none';mbRenderSesi();}
+function mbRenderSesi(){var d=mutasiSesiData,tb=document.getElementById('mbSesiTableBody');tb.innerHTML='';d.slice().reverse().forEach(function(s){var stCls=s.selesai?'color:#16a34a;':'color:#e8821a;font-weight:700;';var stTxt=s.selesai?'Selesai':'BELUM PROSES';tb.innerHTML+='<tr style="cursor:pointer;" onclick="mbBukaSesi('+s.id+')"><td>'+s.tanggal+'</td><td style="'+stCls+'">'+stTxt+'</td><td style="text-align:right;">'+(s.items?s.items.length:0)+'</td><td>'+(s.keterangan||'')+'</td></tr>';});if(!d.length)tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:#9ca3af;">Belum ada sesi mutasi. Klik <b>Baru</b> untuk memulai.</td></tr>';document.getElementById('mbSummary').textContent='Total: '+d.length+' sesi';}
+function mbCari(q){document.getElementById('mbSesiTableBody').querySelectorAll('tr').forEach(function(t){t.style.display=t.textContent.toLowerCase().includes((q||'').toLowerCase())?'':'none';});}
+function mbBaru(){var maxId=mutasiSesiData.reduce(function(m,s){return Math.max(m,s.id);},0);var sesi={id:maxId+1,tanggal:new Date().toISOString().split('T')[0],selesai:false,items:[],keterangan:''};mutasiSesiData.push(sesi);_mbCurSesi=sesi.id;document.getElementById('mbSesiTanggal').value=sesi.tanggal;document.getElementById('mbSesiKet').value='';mbTampilItem();}
+function mbBukaSesi(id){var s=mutasiSesiData.find(function(x){return x.id===id;});if(!s)return;_mbCurSesi=id;document.getElementById('mbSesiTanggal').value=s.tanggal;document.getElementById('mbSesiKet').value=s.keterangan||'';mbTampilItem();}
+function mbKembali(){_mbCurSesi=null;document.getElementById('mbListView').style.display='flex';document.getElementById('mbItemView').style.display='none';mbRenderSesi();}
+function mbTampilItem(){document.getElementById('mbListView').style.display='none';document.getElementById('mbItemView').style.display='flex';mbRenderItem();}
+function mbRenderItem(){var s=mutasiSesiData.find(function(x){return x.id===_mbCurSesi;});if(!s)return;var tb=document.getElementById('mbItemTableBody'),items=s.items||[];tb.innerHTML='';items.forEach(function(i,idx){var cls=i.tipe==='Masuk'?'#16a34a':i.tipe==='Keluar'?'#dc2626':'#2563eb';var cabAsal=i.cabangAsal||'-';var cabTujuan=i.cabangTujuan||'-';tb.innerHTML+='<tr><td>'+(idx+1)+'</td><td>'+i.barang+'</td><td style="color:'+cls+';font-weight:600;">'+i.tipe+'</td><td>'+cabAsal+'</td><td>'+cabTujuan+'</td><td style="text-align:right;">'+i.jumlah+'</td><td>'+(s.selesai?'':'<button class="tool-btn danger" style="padding:2px 6px;font-size:10px;" onclick="mbHapusItem('+i.iid+')"><i class="fas fa-times"></i></button>')+'</td></tr>';});if(!items.length)tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:#9ca3af;">Belum ada barang. Klik <b>Tambah Barang</b>.</td></tr>';document.getElementById('mbItemSummary').textContent=items.length+' item';}
+function mbTambahItem(){mbPopulateCabang();mbModalToggleCabang();document.getElementById('mbAddBarang').value='';document.getElementById('mbAddTipe').value='Masuk';document.getElementById('mbAddJumlah').value='1';document.getElementById('mbItemModal').classList.add('show');}
+function mbTutupModal(){document.getElementById('mbItemModal').classList.remove('show');}
+function mbSimpanItem(){var s=mutasiSesiData.find(function(x){return x.id===_mbCurSesi;});if(!s)return;var barang=document.getElementById('mbAddBarang').value.trim(),tipe=document.getElementById('mbAddTipe').value,jumlah=parseFloat(document.getElementById('mbAddJumlah').value)||0,cabangAsal=document.getElementById('mbAddAsal').value,cabangTujuan=document.getElementById('mbAddTujuan').value;if(!barang||!jumlah){showToast('Barang dan jumlah wajib diisi','error');return;}if(tipe==='Pindah'&&(!cabangAsal||!cabangTujuan)){showToast('Pilih cabang asal dan tujuan','error');return;}if(tipe==='Masuk'&&!cabangTujuan){showToast('Pilih cabang tujuan','error');return;}if(tipe==='Keluar'&&!cabangAsal){showToast('Pilih cabang asal','error');return;}var items=s.items||[];var maxIid=items.reduce(function(m,i){return Math.max(m,i.iid);},0);items.push({iid:maxIid+1,barang:barang,tipe:tipe,jumlah:jumlah,cabangAsal:cabangAsal,cabangTujuan:cabangTujuan});s.items=items;document.getElementById('mbItemModal').classList.remove('show');mbRenderItem();}
+function mbHapusItem(iid){var s=mutasiSesiData.find(function(x){return x.id===_mbCurSesi;});if(!s||!s.items)return;s.items=s.items.filter(function(i){return i.iid!==iid;});mbRenderItem();}
+function mbHapusSesi(){if(!_mbCurSesi){showToast('Pilih sesi dulu','error');return;}if(!confirm('Hapus sesi ini?'))return;mutasiSesiData=mutasiSesiData.filter(function(s){return s.id!==_mbCurSesi;});_mbCurSesi=null;mbTampilList();saveAllData();showToast('Sesi dihapus','success');}
+function mbProses(){var s=mutasiSesiData.find(function(x){return x.id===_mbCurSesi;});if(!s||!s.items||!s.items.length){showToast('Tidak ada item untuk diproses','error');return;}if(s.selesai){showToast('Sesi sudah diproses','warning');return;}if(!confirm('Proses mutasi barang? Stok akan berubah sesuai item.'))return;
+s.tanggal=document.getElementById('mbSesiTanggal').value;
+s.keterangan=document.getElementById('mbSesiKet').value.trim();
+// Apply stock changes
+s.items.forEach(function(i){
+  var item=inventoryData.find(function(x){return x.nama===i.barang||x.namabarang===i.barang||x.barang===i.barang;});
+  if(item){
+    if(!item.stockCabang)item.stockCabang={};
+    if(i.tipe==='Masuk')item.stockCabang[i.cabangTujuan]=(item.stockCabang[i.cabangTujuan]||0)+i.jumlah;
+    else if(i.tipe==='Keluar')item.stockCabang[i.cabangAsal]=(item.stockCabang[i.cabangAsal]||0)-i.jumlah;
+    else if(i.tipe==='Pindah'){
+      item.stockCabang[i.cabangAsal]=(item.stockCabang[i.cabangAsal]||0)-i.jumlah;
+      item.stockCabang[i.cabangTujuan]=(item.stockCabang[i.cabangTujuan]||0)+i.jumlah;
+    }
+  }
+});
+migrateStockCabang();
+s.selesai=true;
+mbRenderItem();
+saveAllData();
+showToast('Mutasi barang diproses ('+s.items.length+' item)','success');}
+function mbCetak(){if(!_mbCurSesi){showToast('Pilih sesi dulu','error');return;}window.open('/print-mutasi?id='+_mbCurSesi,'_blank','width=800,height=600');}
 function closePemasukanForm(){document.getElementById('pemasukanFormModal').classList.remove('show');}
 function closePengeluaranForm(){document.getElementById('pengeluaranFormModal').classList.remove('show');}
 function closeMutasiKasForm(){document.getElementById('mutasiKasFormModal').classList.remove('show');}
-function closeMutasiBarangForm(){document.getElementById('mutasiBarangFormModal').classList.remove('show');}
 function savePemasukan(){var tanggal=document.getElementById('pmTanggal').value;var keterangan=document.getElementById('pmKeterangan').value.trim();var jumlah=parseCurrency(document.getElementById('pmJumlah').value);var kas=document.getElementById('pmKas').value;var catatan=document.getElementById('pmCatatan').value.trim();if(!keterangan||!jumlah){showToast('Keterangan dan jumlah wajib diisi','error');return;}var maxId=pemasukanData.reduce(function(m,d){return Math.max(m,d.id);},0);pemasukanData.push({id:maxId+1,tanggal:tanggal,keterangan:keterangan,jumlah:jumlah,kas:kas,catatan:catatan});closePemasukanForm();renderPemasukan();
 // Catat ke history kas
 if(kas&&jumlah>0) updateKasBalance(kas,jumlah,'in','Pemasukan: '+keterangan,'pemasukan',null);
@@ -6651,11 +6716,9 @@ function savePengeluaran(){var tanggal=document.getElementById('pgTanggal').valu
 if(kas&&jumlah>0) updateKasBalance(kas,jumlah,'out','Pengeluaran: '+keterangan,'pengeluaran',null);
 saveAllData();showToast('Pengeluaran berhasil disimpan','success');}
 function saveMutasiKas(){var tanggal=document.getElementById('mkTanggal').value;var dari=document.getElementById('mkDari').value;var ke=document.getElementById('mkKe').value;var jumlah=parseCurrency(document.getElementById('mkJumlah').value);var keterangan=document.getElementById('mkKeterangan').value.trim();if(dari===ke){showToast('Kas asal dan tujuan harus berbeda','error');return;}if(!jumlah){showToast('Jumlah wajib diisi','error');return;}var maxId=mutasiKasData.reduce(function(m,d){return Math.max(m,d.id);},0);mutasiKasData.push({id:maxId+1,tanggal:tanggal,dari:dari,ke:ke,jumlah:jumlah,keterangan:keterangan});closeMutasiKasForm();renderMutasiKas();saveAllData();showToast('Mutasi kas berhasil disimpan','success');}
-function saveMutasiBarang(){var tanggal=document.getElementById('mbTanggal').value;var barang=document.getElementById('mbNamaBarang').value.trim();var tipe=document.getElementById('mbTipe').value;var jumlah=parseFloat(document.getElementById('mbJumlah').value)||0;var keterangan=document.getElementById('mbKeterangan').value.trim();if(!barang||!jumlah){showToast('Barang dan jumlah wajib diisi','error');return;}var maxId=mutasiBarangData.reduce(function(m,d){return Math.max(m,d.id);},0);mutasiBarangData.push({id:maxId+1,tanggal:tanggal,barang:barang,tipe:tipe,jumlah:jumlah,keterangan:keterangan});closeMutasiBarangForm();renderMutasiBarang();saveAllData();showToast('Mutasi barang berhasil disimpan','success');}
 function deletePemasukan(){if(!selectedPemasukan){showToast('Pilih data yang akan dihapus','error');return;}if(!confirm('Hapus pemasukan ini?'))return;var idx=pemasukanData.findIndex(function(d){return d.id===selectedPemasukan;});if(idx>-1)pemasukanData.splice(idx,1);selectedPemasukan=null;renderPemasukan();showToast('Data berhasil dihapus','success');}
 function deletePengeluaran(){if(!selectedPengeluaran){showToast('Pilih data yang akan dihapus','error');return;}if(!confirm('Hapus pengeluaran ini?'))return;var idx=pengeluaranData.findIndex(function(d){return d.id===selectedPengeluaran;});if(idx>-1)pengeluaranData.splice(idx,1);selectedPengeluaran=null;renderPengeluaran();showToast('Data berhasil dihapus','success');}
 function deleteMutasiKas(){if(!selectedMutasiKas){showToast('Pilih data yang akan dihapus','error');return;}if(!confirm('Hapus mutasi kas ini?'))return;var idx=mutasiKasData.findIndex(function(d){return d.id===selectedMutasiKas;});if(idx>-1)mutasiKasData.splice(idx,1);selectedMutasiKas=null;renderMutasiKas();showToast('Data berhasil dihapus','success');}
-function deleteMutasiBarang(){if(!selectedMutasiBarang){showToast('Pilih data yang akan dihapus','error');return;}if(!confirm('Hapus mutasi barang ini?'))return;var idx=mutasiBarangData.findIndex(function(d){return d.id===selectedMutasiBarang;});if(idx>-1)mutasiBarangData.splice(idx,1);selectedMutasiBarang=null;renderMutasiBarang();showToast('Data berhasil dihapus','success');}
 
 /* ===================== STOK OPNAME (SESSION) ===================== */
 var _soCurSesi=null;
