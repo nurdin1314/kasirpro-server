@@ -80790,6 +80790,287 @@
           "retur": false,
           "lokasiOutlet": "TOKO UTAMA"
         }
+      ]
+    },
+    {
+      "id": 1784124053416,
+      "noFaktur": "R43-150726002",
+      "tanggal": "2026-07-15",
+      "jam": "21:00:53",
+      "ket": "Cash",
+      "pelanggan": "Umum",
+      "pelangganId": null,
+      "jumlah": 245000,
+      "subtotal": 245000,
+      "bayar": 245000,
+      "piutang": "Lunas",
+      "kas": "KAS TOKO",
+      "cabang": "Pusat",
+      "kodeCabang": "Pusat",
+      "outlet": "TOKO UTAMA",
+      "jthTempo": "",
+      "operator": "Admin",
+      "jasaKirim": "",
+      "biayaKirim": 0,
+      "items": [
+        {
+          "id": 4,
+          "kode": "2106004",
+          "nama": "GG FILTER 12BTG",
+          "qty": 1,
+          "sat": "PAK",
+          "harga": 245000,
+          "discPct": 0,
+          "discRp": 0,
+          "retur": false,
+          "lokasiOutlet": "TOKO UTAMA"
+        }
+      ]
+    },
+    {
+      "id": 1784138874202,
+      "noFaktur": "R43-160726003",
+      "tanggal": "2026-07-15",
+      "jam": "01:07:54",
+      "ket": "Cash",
+      "pelanggan": "Umum",
+      "pelangganId": null,
+      "jumlah": 74000,
+      "subtotal": 74000,
+      "bayar": 74000,
+      "piutang": "Lunas",
+      "kas": "KAS TOKO",
+      "cabang": "Pusat",
+      "kodeCabang": "Pusat",
+      "outlet": "TOKO UTAMA",
+      "jthTempo": "",
+      "operator": "Admin",
+      "jasaKirim": "",
+      "biayaKirim": 0,
+      "items": [
+        {
+          "id": 13,
+          "kode": "2106014",
+          "nama": "MAGNUM MILD BIRU 16",
+          "qty": 1,
+          "sat": "BKS",
+          "harga": 28000,
+          "discPct": 0,
+          "discRp": 0,
+          "retur": false,
+          "lokasiOutlet": "TOKO UTAMA"
+        },
+        {
+          "id": 15,
+          "kode": "2106016",
+          "nama": "MAGNUM FILTER HITAM",
+          "qty": 1,
+          "sat": "BKS",
+          "harga": 26000,
+          "discPct": 0,
+          "discRp": 0,
+          "retur": false,
+          "lokasiOutlet": "TOKO UTAMA"
+        },
+        {
+          "id": 5,
+          "kode": "2106006",
+          "nama": "MINYAK CURAH",
+          "qty": 1,
+          "sat": "KG",
+          "harga": 20000,
+          "discPct": 0,
+          "discRp": 0,
+          "retur": false,
+          "lokasiOutlet": "TOKO UTAMA"
+        }
+      ]
+    },
+    {
+      "id": 1784143195315,
+      "noFaktur": "R43-160726004",
+      "tanggal": "2026-07-15",
+      "jam": "02:19:55",
+      "ket": "Cash",
+      "pelanggan": "Umum",
+      "pelangganId": null,
+      "jumlah": 25000,
+      "subtotal": 25000,
+      "bayar": 25000,
+      "piutang": "Lunas",
+      "kas": "KAS TOKO",
+      "cabang": "Pusat",
+      "kodeCabang": "Pusat",
+      "outlet": "TOKO UTAMA",
+      "jthTempo": "",
+      "operator": "Admin",
+      "jasaKirim": "",
+      "biayaKirim": 0,
+      "items": [
+        {
+          "id": 4,
+          "kode": "2106004",
+          "nama": "GG FILTER 12BTG",
+          "qty": 1,
+          "sat": "BKS",
+          "harga": 25000,
+          "discPct": 0,
+          "discRp": 0,
+          "retur": false,
+          "lokasiOutlet": "TOKO UTAMA"
+        }
+      ]
+    },
+    {
+      "id": 1784143210302,
+      "noFaktur": "R43-160726004",
+      "tanggal": "2026-07-15",
+      "jam": "02:20:10",
+      "ket": "Cash",
+      "pelanggan": "Umum",
+      "pelangganId": null,
+      "jumlah": 50000,
+      "subtotal": 50000,
+      "bayar": 50000,
+      "piutang": "Lunas",
+      "kas": "KAS TOKO",
+      "cabang": "Pusat",
+      "kodeCabang": "Pusat",
+      "outlet": "outlet 1",
+      "jthTempo": "",
+      "operator": "Admin",
+      "jasaKirim": "",
+      "biayaKirim": 0,
+      "items": [
+        {
+          "id": 1,
+          "kode": "1001",
+          "nama": "KAOS OBLONG",
+          "qty": 1,
+          "sat": "PCS",
+          "harga": 50000,
+          "discPct": 0,
+          "discRp": 0,
+          "retur": false,
+          "lokasiOutlet": "outlet 1"
+        }
+      ]
+    },
+    {
+      "id": 1784143210302,
+      "noFaktur": "R43-160726004",
+      "tanggal": "2026-07-15",
+      "jam": "02:20:10",
+      "ket": "Cash",
+      "pelanggan": "Umum",
+      "pelangganId": null,
+      "jumlah": 50000,
+      "subtotal": 50000,
+      "bayar": 50000,
+      "piutang": "Lunas",
+      "kas": "KAS TOKO",
+      "cabang": "Pusat",
+      "kodeCabang": "Pusat",
+      "outlet": "outlet 1",
+      "jthTempo": "",
+      "operator": "Admin",
+      "jasaKirim": "",
+      "biayaKirim": 0,
+      "items": [
+        {
+          "id": 1,
+          "kode": "1001",
+          "nama": "KAOS OBLONG",
+          "qty": 1,
+          "sat": "PCS",
+          "harga": 50000,
+          "discPct": 0,
+          "discRp": 0,
+          "retur": false,
+          "lokasiOutlet": "outlet 1"
+        }
+      ]
+    },
+    {
+      "id": 1784155937293,
+      "noFaktur": "R43-160726006",
+      "tanggal": "2026-07-15",
+      "jam": "05:52:17",
+      "ket": "Cash",
+      "pelanggan": "Umum",
+      "pelangganId": null,
+      "jumlah": 245000,
+      "subtotal": 245000,
+      "bayar": 245000,
+      "piutang": "Lunas",
+      "kas": "KAS TOKO",
+      "cabang": "Pusat",
+      "kodeCabang": "Pusat",
+      "outlet": "TOKO UTAMA",
+      "jthTempo": "",
+      "operator": "Admin",
+      "jasaKirim": "",
+      "biayaKirim": 0,
+      "items": [
+        {
+          "id": 4,
+          "kode": "2106004",
+          "nama": "GG FILTER 12BTG",
+          "qty": 1,
+          "sat": "PAK",
+          "harga": 245000,
+          "discPct": 0,
+          "discRp": 0,
+          "retur": false,
+          "lokasiOutlet": "TOKO UTAMA"
+        }
+      ]
+    },
+    {
+      "id": 1784123980892,
+      "noFaktur": "R43-150726001",
+      "tanggal": "2026-07-15",
+      "jam": "20:59:40",
+      "ket": "Cash",
+      "pelanggan": "Umum",
+      "pelangganId": null,
+      "jumlah": 44500,
+      "subtotal": 44500,
+      "bayar": 44500,
+      "piutang": "Lunas",
+      "kas": "KAS TOKO",
+      "cabang": "Pusat",
+      "kodeCabang": "Pusat",
+      "outlet": "TOKO UTAMA",
+      "jthTempo": "",
+      "operator": "Admin",
+      "jasaKirim": "",
+      "biayaKirim": 0,
+      "items": [
+        {
+          "id": 17,
+          "kode": "2106019",
+          "nama": "DJI SAM SOE KRETEK 12",
+          "qty": 1,
+          "sat": "BKS",
+          "harga": 19500,
+          "discPct": 0,
+          "discRp": 0,
+          "retur": false,
+          "lokasiOutlet": "TOKO UTAMA"
+        },
+        {
+          "id": 4,
+          "kode": "2106004",
+          "nama": "GG FILTER 12BTG",
+          "qty": 1,
+          "sat": "BKS",
+          "harga": 25000,
+          "discPct": 0,
+          "discRp": 0,
+          "retur": false,
+          "lokasiOutlet": "TOKO UTAMA"
+        }
       ],
       "_modified_at": "2026-07-15T18:44:33.000Z"
     },
@@ -80962,42 +81243,6 @@
       "_modified_at": "2026-07-15T19:22:06.000Z"
     },
     {
-      "id": 1784143210302,
-      "noFaktur": "R43-160726004",
-      "tanggal": "2026-07-15",
-      "jam": "02:20:10",
-      "ket": "Cash",
-      "pelanggan": "Umum",
-      "pelangganId": null,
-      "jumlah": 50000,
-      "subtotal": 50000,
-      "bayar": 50000,
-      "piutang": "Lunas",
-      "kas": "KAS TOKO",
-      "cabang": "Pusat",
-      "kodeCabang": "Pusat",
-      "outlet": "outlet 1",
-      "jthTempo": "",
-      "operator": "Admin",
-      "jasaKirim": "",
-      "biayaKirim": 0,
-      "items": [
-        {
-          "id": 1,
-          "kode": "1001",
-          "nama": "KAOS OBLONG",
-          "qty": 1,
-          "sat": "PCS",
-          "harga": 50000,
-          "discPct": 0,
-          "discRp": 0,
-          "retur": false,
-          "lokasiOutlet": "outlet 1"
-        }
-      ],
-      "_modified_at": "2026-07-15T19:22:06.000Z"
-    },
-    {
       "id": 1784155937293,
       "noFaktur": "R43-160726006",
       "tanggal": "2026-07-15",
@@ -81032,258 +81277,6 @@
         }
       ],
       "_modified_at": "2026-07-16T00:10:57.000Z"
-    },
-    {
-      "id": 1784123980892,
-      "noFaktur": "R43-150726001",
-      "tanggal": "2026-07-15",
-      "jam": "20:59:40",
-      "ket": "Cash",
-      "pelanggan": "Umum",
-      "pelangganId": null,
-      "jumlah": 44500,
-      "subtotal": 44500,
-      "bayar": 44500,
-      "piutang": "Lunas",
-      "kas": "KAS TOKO",
-      "cabang": "Pusat",
-      "kodeCabang": "Pusat",
-      "outlet": "TOKO UTAMA",
-      "jthTempo": "",
-      "operator": "Admin",
-      "jasaKirim": "",
-      "biayaKirim": 0,
-      "items": [
-        {
-          "id": 17,
-          "kode": "2106019",
-          "nama": "DJI SAM SOE KRETEK 12",
-          "qty": 1,
-          "sat": "BKS",
-          "harga": 19500,
-          "discPct": 0,
-          "discRp": 0,
-          "retur": false,
-          "lokasiOutlet": "TOKO UTAMA"
-        },
-        {
-          "id": 4,
-          "kode": "2106004",
-          "nama": "GG FILTER 12BTG",
-          "qty": 1,
-          "sat": "BKS",
-          "harga": 25000,
-          "discPct": 0,
-          "discRp": 0,
-          "retur": false,
-          "lokasiOutlet": "TOKO UTAMA"
-        }
-      ],
-      "_modified_at": "2026-07-16T00:33:08.000Z"
-    },
-    {
-      "id": 1784124053416,
-      "noFaktur": "R43-150726002",
-      "tanggal": "2026-07-15",
-      "jam": "21:00:53",
-      "ket": "Cash",
-      "pelanggan": "Umum",
-      "pelangganId": null,
-      "jumlah": 245000,
-      "subtotal": 245000,
-      "bayar": 245000,
-      "piutang": "Lunas",
-      "kas": "KAS TOKO",
-      "cabang": "Pusat",
-      "kodeCabang": "Pusat",
-      "outlet": "TOKO UTAMA",
-      "jthTempo": "",
-      "operator": "Admin",
-      "jasaKirim": "",
-      "biayaKirim": 0,
-      "items": [
-        {
-          "id": 4,
-          "kode": "2106004",
-          "nama": "GG FILTER 12BTG",
-          "qty": 1,
-          "sat": "PAK",
-          "harga": 245000,
-          "discPct": 0,
-          "discRp": 0,
-          "retur": false,
-          "lokasiOutlet": "TOKO UTAMA"
-        }
-      ],
-      "_modified_at": "2026-07-16T00:33:08.000Z"
-    },
-    {
-      "id": 1784138874202,
-      "noFaktur": "R43-160726003",
-      "tanggal": "2026-07-15",
-      "jam": "01:07:54",
-      "ket": "Cash",
-      "pelanggan": "Umum",
-      "pelangganId": null,
-      "jumlah": 74000,
-      "subtotal": 74000,
-      "bayar": 74000,
-      "piutang": "Lunas",
-      "kas": "KAS TOKO",
-      "cabang": "Pusat",
-      "kodeCabang": "Pusat",
-      "outlet": "TOKO UTAMA",
-      "jthTempo": "",
-      "operator": "Admin",
-      "jasaKirim": "",
-      "biayaKirim": 0,
-      "items": [
-        {
-          "id": 13,
-          "kode": "2106014",
-          "nama": "MAGNUM MILD BIRU 16",
-          "qty": 1,
-          "sat": "BKS",
-          "harga": 28000,
-          "discPct": 0,
-          "discRp": 0,
-          "retur": false,
-          "lokasiOutlet": "TOKO UTAMA"
-        },
-        {
-          "id": 15,
-          "kode": "2106016",
-          "nama": "MAGNUM FILTER HITAM",
-          "qty": 1,
-          "sat": "BKS",
-          "harga": 26000,
-          "discPct": 0,
-          "discRp": 0,
-          "retur": false,
-          "lokasiOutlet": "TOKO UTAMA"
-        },
-        {
-          "id": 5,
-          "kode": "2106006",
-          "nama": "MINYAK CURAH",
-          "qty": 1,
-          "sat": "KG",
-          "harga": 20000,
-          "discPct": 0,
-          "discRp": 0,
-          "retur": false,
-          "lokasiOutlet": "TOKO UTAMA"
-        }
-      ],
-      "_modified_at": "2026-07-16T00:33:08.000Z"
-    },
-    {
-      "id": 1784143195315,
-      "noFaktur": "R43-160726004",
-      "tanggal": "2026-07-15",
-      "jam": "02:19:55",
-      "ket": "Cash",
-      "pelanggan": "Umum",
-      "pelangganId": null,
-      "jumlah": 25000,
-      "subtotal": 25000,
-      "bayar": 25000,
-      "piutang": "Lunas",
-      "kas": "KAS TOKO",
-      "cabang": "Pusat",
-      "kodeCabang": "Pusat",
-      "outlet": "TOKO UTAMA",
-      "jthTempo": "",
-      "operator": "Admin",
-      "jasaKirim": "",
-      "biayaKirim": 0,
-      "items": [
-        {
-          "id": 4,
-          "kode": "2106004",
-          "nama": "GG FILTER 12BTG",
-          "qty": 1,
-          "sat": "BKS",
-          "harga": 25000,
-          "discPct": 0,
-          "discRp": 0,
-          "retur": false,
-          "lokasiOutlet": "TOKO UTAMA"
-        }
-      ],
-      "_modified_at": "2026-07-16T00:33:08.000Z"
-    },
-    {
-      "id": 1784143210302,
-      "noFaktur": "R43-160726004",
-      "tanggal": "2026-07-15",
-      "jam": "02:20:10",
-      "ket": "Cash",
-      "pelanggan": "Umum",
-      "pelangganId": null,
-      "jumlah": 50000,
-      "subtotal": 50000,
-      "bayar": 50000,
-      "piutang": "Lunas",
-      "kas": "KAS TOKO",
-      "cabang": "Pusat",
-      "kodeCabang": "Pusat",
-      "outlet": "outlet 1",
-      "jthTempo": "",
-      "operator": "Admin",
-      "jasaKirim": "",
-      "biayaKirim": 0,
-      "items": [
-        {
-          "id": 1,
-          "kode": "1001",
-          "nama": "KAOS OBLONG",
-          "qty": 1,
-          "sat": "PCS",
-          "harga": 50000,
-          "discPct": 0,
-          "discRp": 0,
-          "retur": false,
-          "lokasiOutlet": "outlet 1"
-        }
-      ],
-      "_modified_at": "2026-07-16T00:33:08.000Z"
-    },
-    {
-      "id": 1784155937293,
-      "noFaktur": "R43-160726006",
-      "tanggal": "2026-07-15",
-      "jam": "05:52:17",
-      "ket": "Cash",
-      "pelanggan": "Umum",
-      "pelangganId": null,
-      "jumlah": 245000,
-      "subtotal": 245000,
-      "bayar": 245000,
-      "piutang": "Lunas",
-      "kas": "KAS TOKO",
-      "cabang": "Pusat",
-      "kodeCabang": "Pusat",
-      "outlet": "TOKO UTAMA",
-      "jthTempo": "",
-      "operator": "Admin",
-      "jasaKirim": "",
-      "biayaKirim": 0,
-      "items": [
-        {
-          "id": 4,
-          "kode": "2106004",
-          "nama": "GG FILTER 12BTG",
-          "qty": 1,
-          "sat": "PAK",
-          "harga": 245000,
-          "discPct": 0,
-          "discRp": 0,
-          "retur": false,
-          "lokasiOutlet": "TOKO UTAMA"
-        }
-      ],
-      "_modified_at": "2026-07-16T00:33:08.000Z"
     }
   ],
   "pembelian": [
@@ -81298,8 +81291,7 @@
       "keterangan": "",
       "metode": "1 Minggu",
       "operator": "amd35",
-      "kodeCabang": "Pusat",
-      "_modified_at": "2026-07-15T18:44:33.000Z"
+      "kodeCabang": "Pusat"
     },
     {
       "id": 1,
@@ -81313,21 +81305,10 @@
       "metode": "1 Minggu",
       "operator": "amd35",
       "kodeCabang": "Pusat",
-      "_modified_at": "2026-07-16T00:33:08.000Z"
+      "_modified_at": "2026-07-15T18:44:33.000Z"
     }
   ],
   "pelanggan": [
-    {
-      "id": "00000001",
-      "kode": "00000001",
-      "nama": "Muhamad Nurdin",
-      "alamat": "",
-      "kota": "",
-      "telp": "",
-      "npwp": "",
-      "limit": 0,
-      "_modified_at": "2026-07-16T03:10:19.000Z"
-    },
     {
       "id": "00000001",
       "kode": "00000001",
@@ -81350,21 +81331,19 @@
       "telp": "",
       "npwp": "",
       "catatan": "",
-      "_modified_at": "2026-07-16T03:10:19.000Z"
-    },
-    {
-      "id": "00000001",
-      "kode": "00000001",
-      "nama": "Pusat",
-      "alamat": "",
-      "kota": "",
-      "telp": "",
-      "npwp": "",
-      "catatan": "",
       "_modified_at": "2026-07-15T18:56:08.000Z"
     }
   ],
   "kas": [
+    {
+      "id": 1784124285296,
+      "kode": "KAS-001",
+      "nama": "KAS TOKO",
+      "tipe": "Tunai",
+      "saldoAwal": 0,
+      "_modified_at": "2026-07-15T14:04:05.349Z",
+      "saldo": 100000
+    },
     {
       "id": 1784124285296,
       "kode": "KAS-001",
@@ -81382,15 +81361,6 @@
       "saldoAwal": 0,
       "_modified_at": "2026-07-15T18:56:08.000Z",
       "saldo": 100000
-    },
-    {
-      "id": 1784124285296,
-      "kode": "KAS-001",
-      "nama": "KAS TOKO",
-      "tipe": "Tunai",
-      "saldoAwal": 0,
-      "_modified_at": "2026-07-16T00:33:08.000Z",
-      "saldo": 100000
     }
   ],
   "biaya": [],
@@ -81406,8 +81376,7 @@
       "keterangan": "",
       "operator": "amd35",
       "kodeCabang": "Pusat",
-      "lunas": false,
-      "_modified_at": "2026-07-15T18:44:33.000Z"
+      "lunas": false
     },
     {
       "id": 1,
@@ -81421,7 +81390,7 @@
       "operator": "amd35",
       "kodeCabang": "Pusat",
       "lunas": false,
-      "_modified_at": "2026-07-16T00:33:08.000Z"
+      "_modified_at": "2026-07-15T18:44:33.000Z"
     }
   ],
   "piutang": [],
